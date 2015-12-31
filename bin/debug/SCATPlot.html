@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+     
+      .infoWindow
+      {
+      color: red;
+      background-color: #BBBBBB;
+      width: 70px;
+      height: 15px;
+      font-size: 10pt;
+      }
+
+      .left {
+      font-size: 20pt;
+      }
+
+      .separator {
+      clear: both;
+      width: 100%;
+      border-top: 1px solid black;
+      }
+    
+    </style>
+    
+    <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDUMB1avCaqNrfaBksO-JARRHMZam_HHns&sensor=false">
+    </script>
+    <script type="text/javascript" 
+    	src="jquery-1.7.min.js">
+    </script>
+    <script type="text/javascript" 
+    	src="mapLabel.js">
+    </script>
+    <script type="text/javascript" 
+    	src="plotOptions.js">
+    </script>
+
+    <script type="text/javascript">
+
+    	
+ 	var queryString, inputItems, mainMap;
+	function initialize() {
+    	var myOptions = {
+          center: new google.maps.LatLng(19.725, 77.35),
+          zoom: 6,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+        mainMap = new google.maps.Map(document.getElementById("map_canvas"), myOptions);	            		
+        getURLparams();
+       	inputItems = queryString.split("|");
+		plotPoints();
+				
+	}      	
+      	
+	function getURLparams() {
+		queryString = unescape((location.href)).split("?")[1];	
+	}
+        
+	function plotPoints() {
+		var marker, markerOptions, latTotal, longTotal, iconLabel, iconMouseOverDiv;
+		latTotal=0; longTotal=0;
+		for (j=0; j<inputItems.length-1; j++) {										
+			markerOptions = {
+				position: new google.maps.LatLng(inputItems[j].split("*")[2],inputItems[j].split("*")[3]),					          
+				title: inputItems[j].split("*")[0],
+				map: mainMap
+			};			
+			marker = new google.maps.Marker(markerOptions);
+			latTotal += parseFloat(inputItems[j].split("*")[2]);
+			longTotal += parseFloat(inputItems[j].split("*")[3]);		
+			/*	
+      		iconLabel = new Label({
+       			map: mainMap
+     		});
+     		iconLabel.bindTo('position', marker, 'position');
+    		iconLabel.bindTo('text', marker, 'title');
+    		*/
+    		iconMouseOverDiv = new mouseOverDiv({
+    			map:mainMap
+    		});
+    		iconMouseOverDiv.bindTo('position', marker, 'position');
+			//iconMouseOverDiv.bindTo('text', marker, 'title'); 
+        	google.maps.event.addListener(marker, 'mouseover', function() {
+          		;
+        	});
+		}		
+		mainMap.setCenter(new google.maps.LatLng(latTotal/j, longTotal/j));
+	}				
+      
+    </script>
+  </head>
+  <body onload="initialize()">  	
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+  </body>
+</html>

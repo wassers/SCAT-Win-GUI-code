@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+    
+    <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDUMB1avCaqNrfaBksO-JARRHMZam_HHns&sensor=false">
+    </script>
+    <script type="text/javascript">
+    	//alert(" ");
+    	
+    	var queryString, inputItems, mainMap;
+      function initialize() {
+        var myOptions = {
+          center: new google.maps.LatLng(19.725, 77.35),
+          zoom: 6,
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        };
+        mainMap = new google.maps.Map(document.getElementById("map_canvas"), myOptions);	    
+        		
+        getURLparams();
+        //alert("1");
+				document.getElementById("pageTop");
+				
+				inputItems = queryString.split("|");
+				var line1, label1, tokens;
+				for (k=0; k<inputItems.length-1; k++) {				
+					line1 = document.createElement('input');
+					line1.type = "checkbox";
+					line1.id = "chkBox" + k;
+					line1.setAttribute("onclick","alert('1')");
+					line1.onclick = "alert('1')";
+					label1 = document.createElement('label');
+					label1.htmlFor = "chkBox" + k;
+					tokens = inputItems[k].split("*");
+					label1.innerHTML= "<B>/" + tokens[0] + "/</B>" + tokens[1] + " Median:(" + tokens[2] + ", " + tokens[3] + ") Centroid: (" + tokens[4] + ", " + tokens[5] + ")";
+					document.getElementById("pageTop").appendChild(line1);				
+					document.getElementById("pageTop").appendChild(label1);
+				}
+				
+				//alert("1");
+      }
+      	
+      	
+				function getURLparams() {
+					//alert(location.href);
+					queryString = unescape((location.href)).split("?")[1];
+					//alert (queryString);
+				}	
+				function plotPoints() {
+					var boxes = document.getElementsByTagName("input");
+					var labels = document.getElementsByTagName("label");
+					var j=-1;
+					var latList = 0;
+					var longList = 0; 
+					var count = 0;
+					var showAll = false;
+					for (i=0; i <boxes.length; i++) {
+						if (boxes[i].type == "checkbox") {							
+							if (j==-1) {
+								if (boxes	[i].checked) showAll = true;
+							} else {
+								if (boxes[i].checked) {
+									//alert(inputItems[j].split("*")[2] + " " + inputItems[j].split("*")[3]);						
+										
+									 
+									var markerOptions = {
+					          position: new google.maps.LatLng(inputItems[j].split("*")[2],inputItems[j].split("*")[3]),
+					          //position: new google.maps.LatLng(19,70),
+					          title: inputItems[j].split("*")[0] + "/" + inputItems[j].split("*")[1],
+					          map: mainMap
+				        	};
+									if (showAll) {
+										var marker = new google.maps.Marker(markerOptions);
+										marker.setVisible(true);
+									}
+									latList += parseFloat(inputItems[j].split("*")[2]);
+									longList += parseFloat(inputItems[j].split("*")[3]);
+									count++;
+								}
+							}
+							j++;
+						}
+					}				
+					
+					var markerOptions1 = {					
+				  	position: new google.maps.LatLng(latList/count,longList/count),
+				  	title: inputItems[j].split("*")[0] + " mean",
+				  	map: mainMap
+			      };
+						var marker2 = new google.maps.Marker(markerOptions1);	
+						//var meanTag = document.createElement("<span>");
+						meanText.innerHTML = "<BR><B>Mean: " + latList/count + ", " + longList/count;
+						//document.getElementById("pageTop").appendChild(meanTag);
+						
+				}
+				//alert(queryString);
+      
+    </script>
+  </head>
+  <body onload="initialize()">
+  	<div id="pageTop">
+  	Files Chosen: <input type=button onclick="plotPoints();" value="Plot"></input><BR>
+  	<input type=checkbox id="showall" /> <label forid="showall">Show All Points</label> <BR>
+    </div>
+    <div> <span id=meanText></span>
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+  </body>
+</html>
+<script>
+	
+</script>
